@@ -39,10 +39,8 @@ public class fourseason {
 			if (amp> maxAmp) {
 				maxAmp = amp;
 				index = j; 
-			}				
-		
+			}					
 	}
-		
 		return season[index];
 		
 	
