@@ -4,7 +4,7 @@
 2. A year last N days, every season lasts exact N/4 days.Order of seasons are: Winter, Spring, Summer and Autumn
 3. All seasons within a year have different amplitudes = max temperature - min temperature
 *The tasks*
-**Write function to return the name of the season with the highest temperature amplitude.**
+**Write function to return the name of the season with the highest temperature amplitude.**/n
 Solutions: 
 1. Divide the array into 4 parts, each part has n = N/4 numbers. As a result, the index of members of each part will be: 
 - Part 1: 0 -->n-1
