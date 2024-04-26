@@ -18,12 +18,12 @@ public class MAIN {
 			// LOAD DATA TU be.txt or fe.csv VAO CLASS USER
 			// FIRST NEED TO EMPTY LIST OF USERS SO THAT WE CAN RUN THE LOOP INDEFINITELY
 			ArrayList<Users> userList = course.readDataFile(); // #2 - Bring userList out to MAIN
-																// #3 - Fix the input and output of readDataFile()
-																// #4 - Fix the structure of try/catch function in
-																// readDataFile
-																// #5 - Move readDataFile and writeDataFile into Course
-																// parent class, create constructor for child class
-																// using super.filename, adjust the courseCreator method
+									// #3 - Fix the input and output of readDataFile()
+									// #4 - Fix the structure of try/catch function in
+									// readDataFile
+									// #5 - Move readDataFile and writeDataFile into Course
+									// parent class, create constructor for child class
+									// using super.filename, adjust the courseCreator method
 			// SHOW STUDENT LIST
 			UtilityPrint.printUserList(userList);
 
