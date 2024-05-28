@@ -1,0 +1,6 @@
+package com.project.plants.repositories;
+import org.springframework.data.repository.CrudRepository;
+import com.project.plants.entities.Plant;
+public interface PlantRepository extends CrudRepository<Plant,Integer> {
+
+}
