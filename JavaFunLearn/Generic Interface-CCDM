@@ -1,0 +1,25 @@
+//GENRIC INTERFACE
+public interface Replacer<T> {
+  void replace(T data);
+}
+// GENERIC CLASS IMPLEMENT GENERIC INTERFACE
+public class Box <T> implements Replacer<T> {
+  private T data;
+  
+  @Override
+  void replace(T data) {
+    this.data = data; 
+  }
+}
+// NON-GENERIC CLASS IMPLEMENT GENERIC INTERFACE
+public class StringBag implements Replacer<String> {
+  private String data;
+  
+  @Override
+  void replace(String data) {
+    this.data = data; 
+  }
+}
+//IMPLEMENTATION: GENERIC INTERFACE TYPE REFERENCE
+Replacer<Integer> boxReplacer = new Box<>();  // Using generic `Box` implementation
+Replacer<String> bagReplacer = new StringBag();  // Using non-generic `StringBag` implementation
