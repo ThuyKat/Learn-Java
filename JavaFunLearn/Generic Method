@@ -1,0 +1,10 @@
+public class StringBox {
+  private String data;
+// GENERIC METHOD
+  public <T> boolean isString(T item) {
+    return item instanceof String; 
+  }
+}
+
+StringBox box = new StringBox();
+box.isString(5); // Returns false
