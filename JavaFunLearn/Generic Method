@@ -1,6 +1,6 @@
 public class StringBox {
   private String data;
-// GENERIC METHOD
+// GENERIC METHOD: check if item is an instance of String
   public <T> boolean isString(T item) {
     return item instanceof String; 
   }
