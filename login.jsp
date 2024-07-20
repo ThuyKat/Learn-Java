@@ -48,8 +48,11 @@
                 }
                 
                 if (authenticated) {
-                    out.println("<h3>Login Successful</h3>");
-                    out.println("<p>Welcome, " + username + "!</p>");
+                   // out.println("<h3>Login Successful</h3>");
+                   // out.println("<p>Welcome, " + username + "!</p>");
+                    // Redirect to success.jsp
+                        response.sendRedirect("success.jsp");
+                        return;
                 } else {
                     out.println("<h3>Login Failed</h3>");
                     out.println("<p>Invalid username or password.</p>");
