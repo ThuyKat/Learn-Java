@@ -17,6 +17,7 @@
     </form>
 
     <%
+        if ("POST".equalsIgnoreCase(request.getMethod())) {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
@@ -61,6 +62,7 @@
                 if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
         }
+      }
     %>
 </body>
 </html>
