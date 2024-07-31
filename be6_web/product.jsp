@@ -1,4 +1,8 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+
 <!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -13,15 +17,17 @@
 
 <table>
 <tr>
-<td>Coffee</td>
-<td>$10.00</td>
-<td><button>Add to Cart</button></td>
+<th>ID</th>
+<th>Name</th>
+<th>Price</th>
+ </tr>
+ <c:forEach var="product" items="${sessionScope.products}">
+ <tr>
+ <td>${product.id}</td>
+ <td>${product.name}</td>
+ <td>${product.price}</td>
 </tr>
-<tr>
-<td>bread</td>
-<td>$20.00</td>
-<td><button>Add to Cart</button></td>
-</tr>
+</c:forEach>
 </table>
 </body>
 </html>
