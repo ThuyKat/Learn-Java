@@ -14,27 +14,34 @@ import db.ProductDatabaseUtil;
 /**
  * Servlet implementation class ProductServlet
  */
+
 public class ProductServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try {
-            // Fetch all products using ProductDatabaseUtil
-            List<Product> products = ProductDatabaseUtil.getAllProduct();
+			// Fetch all products using ProductDatabaseUtil
+			List<Product> products = null;
+			String category = (String) request.getParameter("category");
+			
+			if (category == null || category.equals("all")) {
+				products = ProductDatabaseUtil.getAllProduct();
 
-            // Set the response type to JSON
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            request.setAttribute("products", products);
-            request.getRequestDispatcher("/WEB-INF/product.jsp").forward(request, response);
+			} else {
+				products = ProductDatabaseUtil.getProductByCategory(category);
+				
+			}
+			request.setAttribute("products", products);
+			request.getRequestDispatcher("product.jsp").forward(request, response);
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 //	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //		// TODO Auto-generated method stub
 //		doGet(request, response);

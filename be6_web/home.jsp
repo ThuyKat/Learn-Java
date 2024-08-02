@@ -10,7 +10,7 @@
 <%-- <% if (request.getAttribute("username") != null){ %> --%>
 <% if (session.getAttribute("username") != null){ %>
 
-<a href ="logout.jsp">LOG OUT</a>
+<a href ="/be6-web/Logout">LOG OUT</a>
 
 <!--  OPTION 1: Params in URL  -->
  
@@ -31,13 +31,13 @@
   
 <%} else { %>
 
-<a href ="login.jsp">LOG IN</a>
+<a href ="/be6-web/Login">LOG IN</a>
 <br>
 Welcome user!
 
 <%} %>
 
 <br>
-<a href = "product.jsp"> PRODUCT</a>
+<a href = "/be6-web/Product"> PRODUCT</a>
 </body>
 </html>

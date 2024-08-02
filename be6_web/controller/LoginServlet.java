@@ -21,7 +21,7 @@ import java.time.Instant;
 import db.DatabaseConnectionUtil;
 import db.UserDatabaseUtil;
 
-@WebServlet("/login2")
+//@WebServlet("/Login")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 

@@ -10,12 +10,12 @@ public class DatabaseConnectionUtil {
 		try {
 			
 			String dbName = "JDBC_be6";
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "godavari");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "root");
 			System.out.println("DB is connected");
 			connection.createStatement().executeUpdate("create database if not exists " + dbName + ";");
 			System.out.println("record is created");
 			connection.close();
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + dbName, "root", "godavari");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + dbName, "root", "root");
 			
 
 		} catch (SQLException e) {

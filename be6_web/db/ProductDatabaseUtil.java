@@ -5,9 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProductDatabaseUtil {
+
+	
 
 	public static List<Product> getAllProduct() {
 		
@@ -24,6 +27,7 @@ public class ProductDatabaseUtil {
 				product.setId(rs.getInt("id"));
 	            product.setName(rs.getString("name"));
 	            product.setPrice(rs.getDouble("price"));
+	            product.setCategory(rs.getString("category"));
 	            
 	            products.add(product);
 			}
@@ -34,5 +38,20 @@ public class ProductDatabaseUtil {
 		}
 		
 		return products;
+	}
+	
+public static List<Product> getProductByCategory(String category) {
+		
+		List<Product> products = getAllProduct();
+		List<Product>productByCategory = new ArrayList<>();
+		
+		
+		for(Product product:products) {
+        	if(product.getCategory().equalsIgnoreCase(category) ){
+        		productByCategory.add(product);
+        	}
+        }
+		
+		return productByCategory;
 	}
 }
