@@ -101,8 +101,7 @@ public class CookieUtil {
 		sessionCookie.setHttpOnly(true);
 		// cookie will only be transmittted over HTTPS
 		sessionCookie.setSecure(true);
-		// make cookie availabe to all path: login, homepage, etc to maintain login
-		// status
+		// make cookie availabe to all path: login, homepage, etc to maintain login status
 		sessionCookie.setPath("/be6-web");
 	return sessionCookie;
 	}
