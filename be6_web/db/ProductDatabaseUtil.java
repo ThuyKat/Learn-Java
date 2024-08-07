@@ -12,22 +12,25 @@ public class ProductDatabaseUtil {
 
 	
 
-	public static List<Product> getAllProduct() {
+	public  List<Product> getAllProduct() throws SQLException {
 		
 		List<Product> products = new ArrayList<>();
+		PreparedStatement ps =null;
+		ResultSet rs =null;
 		
 		try(Connection connection = DatabaseConnectionUtil.getDatabaseConnection()){
 			
 			String query = "SELECT * FROM products";
 			
-			PreparedStatement ps = connection.prepareStatement(query);
-			ResultSet rs = ps.executeQuery();
+			 ps = connection.prepareStatement(query);
+			 rs = ps.executeQuery();
 			while(rs.next()) {
 				Product product = new Product();
 				product.setId(rs.getInt("id"));
 	            product.setName(rs.getString("name"));
 	            product.setPrice(rs.getDouble("price"));
 	            product.setCategory(rs.getString("category"));
+	            product.setDescription(rs.getString("description"));
 	            
 	            products.add(product);
 			}
@@ -35,12 +38,15 @@ public class ProductDatabaseUtil {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			ps.close();
+			rs.close();
 		}
 		
 		return products;
 	}
 	
-public static List<Product> getProductByCategory(String category) {
+public  List<Product> getProductByCategory(String category) throws SQLException {
 		
 		List<Product> products = getAllProduct();
 		List<Product>productByCategory = new ArrayList<>();
@@ -54,4 +60,21 @@ public static List<Product> getProductByCategory(String category) {
 		
 		return productByCategory;
 	}
+
+
+
+public  Product getProductById(String id) throws SQLException {
+	
+	List<Product> products = getAllProduct();
+	Product product = null;
+	
+	
+	for(Product productDB:products) {
+    	if(productDB.getId()==Integer.parseInt(id) ){
+    		product = productDB;
+    	}
+    }
+	
+	return product;
+}
 }

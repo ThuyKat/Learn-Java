@@ -23,15 +23,16 @@ public class ProductServlet extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try {
+			ProductDatabaseUtil productData = new ProductDatabaseUtil();
 			// Fetch all products using ProductDatabaseUtil
 			List<Product> products = null;
 			String category = (String) request.getParameter("category");
 			
 			if (category == null || category.equals("all")) {
-				products = ProductDatabaseUtil.getAllProduct();
+				products = productData.getAllProduct();
 
 			} else {
-				products = ProductDatabaseUtil.getProductByCategory(category);
+				products = productData.getProductByCategory(category);
 				
 			}
 			request.setAttribute("products", products);

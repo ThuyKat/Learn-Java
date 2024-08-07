@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class UserDatabaseUtil {
 
-	private static User getUserByUsername(String username) throws SQLException {
+	public static User getUserByUsername(String username) throws SQLException {
 		User user = null;
 		//get DB connection
 		System.out.println("connecting to DB");
@@ -49,5 +49,34 @@ public class UserDatabaseUtil {
 		}
 		return false;
 		
+	}
+	
+	public static User getUserById(int id) throws SQLException  {
+		User user = null;
+		//get DB connection
+		System.out.println("connecting to DB");
+		Connection connection = DatabaseConnectionUtil.getDatabaseConnection();
+		
+		//we asume that username is unique and only one user matched with a particular username
+		// get user by username
+		System.out.println("connected to DB");
+		//load query
+		PreparedStatement ps = connection.prepareStatement("select * from users where id = ?;");
+		ps.setInt(1, id);
+		//execute query
+		ResultSet result = ps.executeQuery();
+		System.out.println("executed query to get user from database ");
+		if(result.next()) {
+		String username = result.getString("username");
+		String password = result.getString("password");
+		String gender = result.getString("gender");
+		String hobbies = result.getString("hobbies");
+		String city = result.getString("city");
+		connection.close();
+		user= new User(id,username,password,gender,hobbies,city);
+		} else{
+			System.out.println("user not found");
+		}
+		return user;
 	}
 }

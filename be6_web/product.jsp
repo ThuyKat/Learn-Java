@@ -31,6 +31,10 @@
                         
                         <td>${product.name}</td>
                         <td>${product.price}</td>
+                        <td>
+                        
+                        <a href ="ProductDetail?productId=${product.id }">Product Details</a>
+                    	</td>
                     </tr>
                 </c:forEach>
             </table>
