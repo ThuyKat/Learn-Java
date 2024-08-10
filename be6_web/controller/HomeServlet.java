@@ -31,6 +31,7 @@ public class HomeServlet extends HttpServlet {
 		Cart cart = new Cart();
 		// get the list of items in cart
 		List<ItemInCart> items = new ArrayList<>();
+		
 
 		// add to cart
 		// retrieve cart from cart cookie
@@ -41,11 +42,12 @@ public class HomeServlet extends HttpServlet {
 		System.out.println(username + " I am at HomeServlet checking if user is logged in");
 
 		// find cookieCart
+		Cookie cookieCart = null;
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equalsIgnoreCase("cookieCart")) {
-
+					cookieCart = cookie;
 					System.out.println("cookieCart is found!");
 
 					String[] serialisedItems = cookie.getValue().split("\\|");
@@ -63,10 +65,11 @@ public class HomeServlet extends HttpServlet {
 							e.printStackTrace();
 						}
 					}
-					cart.setItems(items);
+//					cart.setItems(items);
 				}
 			}
 		}
+		System.out.println(items.size());
 		if (username != null) {
 			System.out.println("username is found :" + username);
 			// retrieve cart associated with user in database
@@ -76,13 +79,21 @@ public class HomeServlet extends HttpServlet {
 				int userId = user.getUserId();
 				// replace the guest cart with db cart
 				CartDatabaseUtil cartRepo = new CartDatabaseUtil();
-				cart = cartRepo.getCartByUserId(userId);
-				items = cart.getItems();
-				// invalidate the cookieCart by setting its value to null
-				Cookie newCookie = new Cookie("cookieCart", null);
-				newCookie.setMaxAge(0); // Set the max age to 0 to delete the cookie
-				newCookie.setPath("/be6-web"); // Set the cookie path to match the original cookie
-				response.addCookie(newCookie);
+				Cart cartDB = cartRepo.getCartByUserId(userId);
+				
+				
+				if(cartDB !=null) {
+					cart = cartDB;
+					items = cart.getItems();
+				}
+				
+//				if(cookieCart !=null) {
+//				// invalidate the cookieCart by setting its value to null
+//				Cookie newCookie = new Cookie("cookieCart", null);
+//				newCookie.setMaxAge(0); // Set the max age to 0 to delete the cookie
+//				newCookie.setPath("/be6-web"); // Set the cookie path to match the original cookie
+//				response.addCookie(newCookie);
+//				}
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -90,17 +101,25 @@ public class HomeServlet extends HttpServlet {
 			}
 
 		}
-
+		cart.setItems(items);
 		session.setAttribute("cart", cart);
+		
 		int countItem = 0;
 		if (items.size() != 0) {
 			for (ItemInCart item : items) {
 				countItem += item.getQuantity();
+				System.out.println(item.getProduct().getName() + "- product at HomeServlet");
 			}
 		}
 		session.setAttribute("countItem", countItem);
-
-		response.sendRedirect("home.jsp");
+		String action = (String)request.getParameter("action");
+		System.out.println(action + "action captured at HomeServlet");
+		
+		if(action =="viewCart") {
+			response.sendRedirect("/be6-web/Cart");
+		}else {
+		response.sendRedirect("/be6-web/Product");
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

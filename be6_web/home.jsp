@@ -40,7 +40,7 @@ Welcome user!
 <br>
 <a href = "/be6-web/Product"> PRODUCT</a>
 <form action ="/be6-web/Cart" method="get">
- <input type="hidden" name="action" value="viewCart">
+ <!-- <input type="hidden" name="action" value="viewCart"> -->
 <button type="submit">Cart (${sessionScope.countItem})</button>
    
 

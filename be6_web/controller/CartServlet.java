@@ -29,22 +29,24 @@ public class CartServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		
-		String action = (String)request.getParameter("action");
-		
-		if(action.equals ("viewCart")) {
-			System.out.println("viewCart in action");
+
+		System.out.println("viewCart ");
 		HttpSession session = request.getSession();
 		Cart cart = (Cart) session.getAttribute("cart");
 		List<ItemInCart>items = cart.getItems();
+		if(items !=null) { // in case of logging in from other page than going through Home, cart will not be loaded
 		double totalPrice = items.stream().mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice())
 			    .sum();
 		float roundedTotal = 	Math.round(totalPrice * 100) / 100;
 		cart.setTotalPrice(roundedTotal);
 		session.setAttribute("cart", cart);
-		response.sendRedirect("viewCart.jsp");}
+		response.sendRedirect("viewCart.jsp");
+		}else {
+			response.sendRedirect("/be6-web/Home?action=viewCart");
+			
+		}
 		
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -62,12 +64,7 @@ public class CartServlet extends HttpServlet {
 			items = cart.getItems();
 			cartId = cart.getId();
 			}
-		//check 
-		if(items.size() != 0) {
-		for(ItemInCart item : items) {
-			System.out.println(item.getProduct().getName());
-		}}
-		
+	
 		ProductDatabaseUtil ProductRepo = new ProductDatabaseUtil();
 		// find product by productId
 		String productId = (String) request.getParameter("productId");
@@ -86,10 +83,7 @@ public class CartServlet extends HttpServlet {
 							System.out.println("updatedQuantity: "+updatedQuantity);
 							item.setQuantity(updatedQuantity);
 							isProductExistInCart = true;
-							// reset the itemCount in session:
-							int countItem = (int) session.getAttribute("countItem");
-							countItem +=quantity;
-							session.setAttribute("countItem", countItem);
+							
 							break;
 						}
 	
@@ -102,6 +96,11 @@ public class CartServlet extends HttpServlet {
 					newItem.setQuantity(quantity);
 					items.add(newItem);
 				}
+				// reset the itemCount in session:
+				int countItem = (int) session.getAttribute("countItem");
+				countItem +=quantity;
+				session.setAttribute("countItem", countItem);
+				
 				if(username ==null) {
 				// guest user: convert the list of items to string and add it to cart cookie
 				String serializedItems = "";
@@ -118,7 +117,12 @@ public class CartServlet extends HttpServlet {
 				Cookie cookieCart = new Cookie(cookieCartName, cookieCartValue);
 				cookieCart.setMaxAge(60 * 60 * 24 * 7); // cookie will last for 7 days
 				response.addCookie(cookieCart);
+				
+				//update cart attribute in session
+				cart.setItems(items);
+				session.setAttribute("cart", cart);
 				}else {
+				//logged in user
 				//if cart not exist, save new cart to the db
 					if(cartId == 0) {
 						System.out.println("cart not exist");
@@ -134,11 +138,25 @@ public class CartServlet extends HttpServlet {
 						cartId =cart.getId();
 						
 						itemInCartRepo.saveItemInCart(items,cartId);
-					}
+						//update total price attribute
+						double totalPrice = items.stream().mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice())
+							    .sum();
+						float roundedTotal = 	Math.round(totalPrice * 100) / 100;
+						cart.setTotalPrice(roundedTotal);
+						
+						cartRepo.updateCart(cart);
+					}else {
 				//if cart exist, update cart and itemInCart
 					System.out.println("cart is in db");
-					cartRepo.updateCart(cart);
 					itemInCartRepo.updateItemInCart(items,cartId);
+					//update total price attribute
+					double totalPrice = items.stream().mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice())
+						    .sum();
+					float roundedTotal = 	Math.round(totalPrice * 100) / 100;
+					cart.setTotalPrice(roundedTotal);
+					
+					cartRepo.updateCart(cart);
+					}
 				}
 
 			} else {

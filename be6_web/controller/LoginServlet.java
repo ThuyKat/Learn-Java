@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
 			if (returnURI != null) {
 				response.sendRedirect(returnURI);
 			} else {
-				response.sendRedirect("home.jsp");
+				response.sendRedirect("/be6-web/Home");
 			}
 			return;
 		}
@@ -180,7 +180,7 @@ public class LoginServlet extends HttpServlet {
 						System.out.println("returning to ProductDetail....");
 						response.sendRedirect(returnURI);
 					} else {
-						response.sendRedirect("home.jsp");
+						response.sendRedirect("/be6-web/Home");
 					}
 
 				} else {

@@ -2,6 +2,7 @@ package controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import db.CookieUtil;
 import db.DatabaseConnectionUtil;
 
 
@@ -45,6 +47,17 @@ public class LogoutServlet extends HttpServlet {
 					}catch(Exception e){
 						e.printStackTrace();
 					}
+			//clear the cookieCart if any
+					Cookie cookieCart = CookieUtil.findCookieByName(request, "cookieCart");
+					
+					if(cookieCart !=null) {
+					// invalidate the cookieCart by setting its value to null
+					Cookie newCookie = new Cookie("cookieCart", null);
+					newCookie.setMaxAge(0); // Set the max age to 0 to delete the cookie
+					newCookie.setPath("/be6-web"); // Set the cookie path to match the original cookie
+					response.addCookie(newCookie);
+					}
+					
 				}
 
 
