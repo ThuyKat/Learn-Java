@@ -41,7 +41,7 @@ public class ProductDetailsServlet extends HttpServlet {
 			String productId = request.getParameter("productId");
 			product = productData.getProductById(productId);
 			feedbacks =  feedbackData.getFeedbackByProductId(productId);
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -58,7 +58,15 @@ public class ProductDetailsServlet extends HttpServlet {
             String username = user.getUserName();
             feedbackUsernames.put(feedback.getId(), username);
         }
-		request.setAttribute("product", product);
+        if(product != null) {
+		  request.setAttribute("product", product);
+        } else {
+        	response.sendRedirect("error.jsp");
+        }
+        String URI =request.getRequestURI();
+        String queryString = request.getQueryString();
+        String fullURI = URI+="?"+queryString;
+        request.setAttribute("returnURI", fullURI);
 		request.setAttribute("feedbacks", feedbacks);
         request.setAttribute("feedbackUsernames", feedbackUsernames);
 		request.getRequestDispatcher("productDetail.jsp").forward(request, response);

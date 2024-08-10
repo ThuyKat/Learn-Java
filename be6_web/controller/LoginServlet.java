@@ -56,8 +56,8 @@ public class LoginServlet extends HttpServlet {
 			if (cookie != null) {
 				System.out.println("session cookie found");
 				sessionCookieValue = cookie.getValue();
-				try (Connection connection = DatabaseConnectionUtil.getDatabaseConnection()) {
-					int userId = CookieUtil.getUserIdFromSessionCookie(connection, sessionCookieValue);
+				try  {
+					int userId = CookieUtil.getUserIdFromSessionCookie( sessionCookieValue);
 					if (userId != -1) {
 						User user = UserDatabaseUtil.getUserById(userId);
 						if (user != null) {
@@ -66,7 +66,7 @@ public class LoginServlet extends HttpServlet {
 							if (returnURI != null) {
 								response.sendRedirect(returnURI);
 							} else {
-								response.sendRedirect("home.jsp");
+								response.sendRedirect("/be6-web/Home");
 							}
 							return;
 						}
@@ -112,22 +112,22 @@ public class LoginServlet extends HttpServlet {
 
 		if (username != null && password != null) {
 			int userID = 0; // to use in sessionCookie
-			Connection connection = null;
-			PreparedStatement psFind = null;
-			ResultSet cookieRs = null;
-			PreparedStatement ps1 = null;
+			
+//			PreparedStatement psFind = null;
+//			ResultSet cookieRs = null;
+//			PreparedStatement ps1 = null;
 			try {
 				if (UserDatabaseUtil.authenticate(username, password)) {
 					User user = UserDatabaseUtil.getUserByUsername(username);
 					userID = user.getUserId();
-					CookieDB cookieDB = CookieUtil.getCookieDBByUserId(connection, userID);
+					CookieDB cookieDB = CookieUtil.getCookieDBByUserId(userID);
 					// VALIDATING COOKIE
 					/*
 					 * check for cookie's expiration time. If it is still active, calculate the
 					 * maxAge and send it back
 					 */
 					if (cookieDB != null) {
-						cookieDB = CookieUtil.updateCookieExpirationTime(cookieDB, connection);
+						cookieDB = CookieUtil.updateCookieExpirationTime(cookieDB);
 
 						// SEND BACK UPDATED COOKIE TO USER
 						String cookieValue = cookieDB.getSessionID();
@@ -171,7 +171,7 @@ public class LoginServlet extends HttpServlet {
 						cookieToSave.setUserId(String.valueOf(userID));
 						cookieToSave.setSessionID(sessionID);
 						cookieToSave.setCreationTime(creationTimestamp);
-						CookieUtil.saveCookieToDatabase(cookieToSave, connection);
+						CookieUtil.saveCookieToDatabase(cookieToSave);
 						// redirection
 						session.setAttribute("username", username);
 						session.setAttribute("password", password);

@@ -28,27 +28,44 @@ public class CookieUtil {
 		}
 		return sessionCookie;
 	}
-
-	public static int getUserIdFromSessionCookie(Connection connection, String sessionCookieValue) throws SQLException {
-		String cookieQuery = "SELECT * FROM session_cookies WHERE sessionID = ?";
-		try (PreparedStatement psCookie = connection.prepareStatement(cookieQuery)) {
+	
+	public static int getUserIdFromSessionCookie( String sessionCookieValue) throws SQLException {
+		PreparedStatement psCookie = null;
+		ResultSet rsCookie = null;
+		
+		try (Connection connection = DatabaseConnectionUtil.getDatabaseConnection()) {
+			String cookieQuery = "SELECT * FROM session_cookies WHERE sessionID = ?";
+			psCookie = connection.prepareStatement(cookieQuery);
 			psCookie.setString(1, sessionCookieValue);
-			try (ResultSet rsCookie = psCookie.executeQuery()) {
-				if (rsCookie.next()) {
-					return rsCookie.getInt("user_id");
-				}
+			rsCookie = psCookie.executeQuery();
+			if (rsCookie.next()) {
+				return rsCookie.getInt("user_id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(psCookie !=null) {
+				psCookie.close();
+			}
+			if(rsCookie!=null) {
+				rsCookie.close();
 			}
 		}
+
 		return -1;
 	}
 
-	public static CookieDB getCookieDBByUserId(Connection connection, int userID) throws SQLException {
+	public static CookieDB getCookieDBByUserId( int userID) throws SQLException {
+		
 		CookieDB cookieDB = null;
+		PreparedStatement psFind = null;
+		ResultSet cookieRs = null;
+		
 		String findCookieQuery = "SELECT * FROM session_cookies WHERE user_id = ?";
-		try (PreparedStatement psFind = connection.prepareStatement(findCookieQuery)) {
-
+		try (Connection connection = DatabaseConnectionUtil.getDatabaseConnection()) {
+			psFind = connection.prepareStatement(findCookieQuery);
 			psFind.setInt(1, userID);
-			try (ResultSet cookieRs = psFind.executeQuery()) {
+			cookieRs = psFind.executeQuery();
 				if (cookieRs.next()) {
 					System.out.println("a cookie is found for this user");
 					cookieDB = new CookieDB();
@@ -61,20 +78,30 @@ public class CookieUtil {
 					cookieDB.setUserId(userId);
 					cookieDB.setId(id);
 				}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally {
+			if(psFind!=null) {
+				psFind.close();
+			}
+			if(cookieRs!=null) {
+				cookieRs.close();
 			}
 		}
 		return cookieDB;
 
 	}
 
-	public static CookieDB updateCookieExpirationTime(CookieDB cookieDB, Connection connection) throws SQLException {
+	public static CookieDB updateCookieExpirationTime(CookieDB cookieDB) throws SQLException {
 
 		// VALIDATING COOKIE
 		/*
 		 * check for cookie's expiration time. If it is still active, calculate the
 		 * maxAge and send it back
 		 */
-
+		PreparedStatement psUpdate = null;
+		try(Connection connection = DatabaseConnectionUtil.getDatabaseConnection()){
 		int id = cookieDB.getId();
 		Timestamp cookieExpirationTime = cookieDB.getExpirationTime();
 
@@ -82,13 +109,19 @@ public class CookieUtil {
 			// Cookie has expired, update expiration time to extra 7 days from current time
 			Timestamp newExpirationTime = Timestamp.from(Instant.now().plusSeconds(7 * 24 * 60 * 60));
 			String updateCookieQuery = "UPDATE session_cookies SET expiration_time = ? WHERE id = ?";
-			PreparedStatement psUpdate = connection.prepareStatement(updateCookieQuery);
+			psUpdate = connection.prepareStatement(updateCookieQuery);
 			psUpdate.setTimestamp(1, newExpirationTime);
 			psUpdate.setInt(2, id);
 			psUpdate.executeUpdate();
 			cookieDB.setExpirationTime(newExpirationTime);
 		}
 		return cookieDB;
+		}finally {
+			if(psUpdate !=null) {
+				psUpdate.close();
+			}
+			
+		}
 	}
 	
 	public static Cookie createSessionCookie(String sessionID) {
@@ -101,21 +134,24 @@ public class CookieUtil {
 		sessionCookie.setHttpOnly(true);
 		// cookie will only be transmittted over HTTPS
 		sessionCookie.setSecure(true);
-		// make cookie availabe to all path: login, homepage, etc to maintain login status
+		// make cookie availabe to all path: login, homepage, etc to maintain login
+		// status
 		sessionCookie.setPath("/be6-web");
 	return sessionCookie;
 	}
 	
-	public static void saveCookieToDatabase(CookieDB sessionCookie, Connection connection) throws SQLException {
+	public static void saveCookieToDatabase(CookieDB sessionCookie) throws SQLException {
+		
 		// save sessionCookie in database
-	
+		PreparedStatement ps1 = null;
+		try(Connection connection = DatabaseConnectionUtil.getDatabaseConnection()){
 		// create table session_cookies if not exist
 		String sql = "CREATE TABLE IF NOT EXISTS session_cookies(id INT AUTO_INCREMENT PRIMARY KEY, sessionID VARCHAR(100) NOT NULL UNIQUE, user_id VARCHAR(50) NOT NULL, creation_time TIMESTAMP NOT NULL,expiration_time TIMESTAMP NOT NULL);";
 		connection.createStatement().executeUpdate(sql);
 
 		// save sessionCookie into the table
 		String sql1 = "INSERT INTO session_cookies(sessionID,user_id,creation_time,expiration_time) VALUES (?,?,?,?)";
-		PreparedStatement ps1 = connection.prepareStatement(sql1);
+		ps1 = connection.prepareStatement(sql1);
 
 			ps1.setString(1, sessionCookie.getSessionID());
 			ps1.setString(2, sessionCookie.getUserId());
@@ -124,5 +160,10 @@ public class CookieUtil {
 			ps1.executeUpdate();
 		
 		System.out.println("Session cookie saved!");
+	}finally {
+		if(ps1 !=null) {
+			ps1.close();
+		}
+	}
 	}
 }

@@ -37,10 +37,8 @@ public class FeedbackDatabaseUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			if(ps !=null){
-			ps.close();}
-			if(rs !=null){
-			rs.close();}
+			ps.close();
+			rs.close();
 		}
 
 		return feedbacks;
@@ -63,8 +61,7 @@ public class FeedbackDatabaseUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if(statement !=null){
-			statement.close();}
+			statement.close();
 		}
 		return rowsInserted;
 	}
