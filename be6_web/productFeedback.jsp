@@ -36,7 +36,7 @@ flex-direction:column
  </c:forEach>
 <hr>
 <div class=container>
-<form action="/be6-web/ProductDetail" method="post">
+<form action="/be6-web/Feedback" method="post">
 
 <input type="text" name="productId" value= ${param.productId} hidden=true>
 

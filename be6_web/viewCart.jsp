@@ -56,7 +56,8 @@
     </c:if>
     
     <a href="/be6-web/Product">Continue Shopping</a>
-    <a href="/be6-web/checkout">Checkout</a>
-    
+    <form method="post" action="/be6-web/Checkout">
+    <input type="submit" value="Checkout" />
+    </form>
 </body>
 </html>

@@ -106,10 +106,7 @@ public class HomeServlet extends HttpServlet {
 		
 		int countItem = 0;
 		if (items.size() != 0) {
-			for (ItemInCart item : items) {
-				countItem += item.getQuantity();
-				System.out.println(item.getProduct().getName() + "- product at HomeServlet");
-			}
+			countItem = items.size();
 		}
 		session.setAttribute("countItem", countItem);
 		String action = (String)request.getParameter("action");

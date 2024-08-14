@@ -38,7 +38,9 @@ public class FeedbackDatabaseUtil {
 			e.printStackTrace();
 		} finally {
 			ps.close();
+			if(rs !=null) {
 			rs.close();
+			}
 		}
 
 		return feedbacks;

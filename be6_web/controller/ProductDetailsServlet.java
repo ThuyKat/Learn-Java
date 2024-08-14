@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import db.Cart;
 import db.Feedback;
 import db.FeedbackDatabaseUtil;
 import db.Product;
@@ -30,85 +31,86 @@ public class ProductDetailsServlet extends HttpServlet {
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		String productId = request.getParameter("productId");
 		Product product = null;
-		List<Feedback>feedbacks=null;
+		System.out.println("I am at productDetail servlet, quantity chosen is: "+request.getAttribute("quantity"));
+		Boolean returningFromFeedback = (Boolean) request.getAttribute("returningFromFeedback");
+		
 		
 		try {
-			ProductDatabaseUtil productData = new ProductDatabaseUtil();
-			FeedbackDatabaseUtil feedbackData = new FeedbackDatabaseUtil();
-			
-			String productId = request.getParameter("productId");
+			ProductDatabaseUtil productData = new ProductDatabaseUtil();			
 			product = productData.getProductById(productId);
-			feedbacks =  feedbackData.getFeedbackByProductId(productId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// Create a map to store feedback IDs and corresponding usernames
-        Map<Integer, String> feedbackUsernames = new HashMap<>();
-        for (Feedback feedback : feedbacks) {
-            User user = null;
-			try {
-				user = UserDatabaseUtil.getUserById(feedback.getUserId());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            String username = user.getUserName();
-            feedbackUsernames.put(feedback.getId(), username);
-        }
+		
         if(product != null) {
 		  request.setAttribute("product", product);
         } else {
         	response.sendRedirect("error.jsp");
         }
         String URI =request.getRequestURI();
+        System.out.println("current request URI: "+ URI);
         String queryString = request.getQueryString();
         String fullURI = URI+="?"+queryString;
         request.setAttribute("returnURI", fullURI);
-		request.setAttribute("feedbacks", feedbacks);
-        request.setAttribute("feedbackUsernames", feedbackUsernames);
+		System.out.println("redirecting to feedback controller");
+		System.out.println("returning from feedback is " + returningFromFeedback );
+		
+		if(returningFromFeedback == null) {
+			System.out.println("going to FeedbackServlet now");
+		request.getRequestDispatcher("/Feedback").forward(request, response); 
+//			response.sendRedirect("be6-web/Feedback");
+		}else if(returningFromFeedback ==false) {
+			int selectedQuantity = (int) request.getAttribute("quantity");
+			response.sendRedirect("/be6-web/Feedback?productId="+productId+"&&"+"quantity="+selectedQuantity);
+		
+		}else {
 		request.getRequestDispatcher("productDetail.jsp").forward(request, response);
+		
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("posting feedback...");
-		HttpSession session = request.getSession();
-		String username = (String) session.getAttribute("username");
-		//if user not yet logged in, redirect user to login servlet
-		System.out.println(username);
-		if(username == null) {
-			String uriPath = request.getRequestURI(); 
-			System.out.println(uriPath);
-			String queryString = "productId="+request.getParameter("productId");
-			System.out.println(queryString);
-			String redirectURI = "/be6-web/Login?returnURI="+uriPath;
-			if(queryString!=null) {
-				redirectURI += "?" + queryString;
-			}
-			response.sendRedirect(redirectURI); // show the login URL instead of productDetail URL
-		// if user has already logged in, save feedback to database
-		}else {
-			try {
-			System.out.println("user has logged in");
-			FeedbackDatabaseUtil feedbackData = new FeedbackDatabaseUtil();
-			// save feedback details to database
-			int productId = Integer.parseInt(request.getParameter("productId"));
-			User user = UserDatabaseUtil.getUserByUsername(username);
-			int userId = user.getUserId();
-			String feedbackText = request.getParameter("feedback");
-			String subject = request.getParameter("subject");
-			feedbackData.saveFeedback( productId, userId, feedbackText, subject);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-			//reload the page with the new feedback added
-			doGet(request,response);
-		}
+		
+
+		int quantity = 0;
+		// Get  parameters from the request
+        String quantityParam = request.getParameter("quantity");
+        String action = request.getParameter("action");
+        
+		//UDPATE QUANTITY
+           //get the current quantity input
+        if (quantityParam != null && !quantityParam.isEmpty()) {
+            try {
+                quantity = Integer.parseInt(quantityParam);
+            } catch (NumberFormatException e) {
+                quantity = 0; // Default to 0 if parsing fails
+            }
+        }
+           //submit quantity
+        if("+".equals(action)) {
+        	quantity ++;
+        }else if("-".equals(action)) {
+        	quantity--;
+        }
+        // Ensure quantity does not go below 0
+        if (quantity < 0) {
+            quantity = 0;
+        }
+        request.setAttribute("quantity", quantity);
+        //avoid dispatch post request to FeedbackServlet
+        Boolean returningFromFeedback = false;
+        request.setAttribute("returningFromFeedback", returningFromFeedback);
+        
+        //refresh the page
+        
+        
+        doGet(request,response); //still post request here!!! be careful if forward this to Feedback, it will be post, not get method
 		
 	}
 }

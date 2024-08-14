@@ -10,12 +10,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- <style>
+ <style>
 .product-action{
 display:flex;
 align-item:center;
 }
-</style> -->
+</style> 
 <meta charset="UTF-8">
 <title>Product Details</title>
 </head>
@@ -26,27 +26,33 @@ align-item:center;
 <p><b>Description:</b> <i> ${product.description} </i></p>
 <p><b>Price:</b> ${product.price} </p>
 
-<!-- 	<div class="product-action"> -->
+
+
+	<form method="post" action="/be6-web/ProductDetail?productId=${product.id}">
+		<%-- <input type="hidden" name="productId" value="${product.id}"> --%>
+	   	<input type="submit" value="-" name="action" >
+	    <input type="number" name="quantity" value="${quantity != null ? quantity : 0}" min="0" step="1">
+	    <input type="submit" value="+" name="action" >
+	    <!-- <input type="button" value="+" formaction="/be6-web/ProductDetail" > -->
+	</form>
+	
+ 	<div class="product-action"> 
 	<form action="/be6-web/Cart" method="post"  >
 	    <input type="hidden" name="productId" value="${product.id}">
 	    <input type ="hidden" name="returnURI" value="${returnURI}">
+	    <input type="hidden" name="quantity" value="${quantity}">
 	    <input type="hidden" name="action" value="addToCart">
+	 
 	    <button type="submit" >Add to Cart </button>
 	</form>
 	
-	
-	
-	<%-- <input type="number" id="quantity" name="quantity" value="0" readonly>
-	
-	
-	
-	<form action="/Cart" method="post"  >
+	<%-- <form action="/Cart" method="post"  >
 	    <input type="hidden" name="productId" value="${product.id}">
 	    <input type="hidden" name="action" value="RemoveFromCart">
 	    <button type="submit" >Remove From Cart </button>
-	</form>
+	</form> --%>
 	
-	</div> --%>
+	</div> 
 <hr>
 <jsp:include page="productFeedback.jsp"/>
 
