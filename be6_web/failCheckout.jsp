@@ -12,7 +12,7 @@
         <p>We're sorry, but there was an issue processing your checkout.</p>
         <p>Please try again or contact customer support if the problem persists.</p>
         <p>
-            <a href="/be6-web/checkout">Retry Checkout</a> | 
+            <a href="/be6-web/Checkout">Retry Checkout</a> | 
             <a href="/be6-web/Product">Continue Shopping</a>
         </p>
    <!--  </div> -->
