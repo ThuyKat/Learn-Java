@@ -1,7 +1,7 @@
 package controller;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,16 +10,13 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 
 import db.CookieDB;
 import db.CookieUtil;
-import db.DatabaseConnectionUtil;
+
 import db.User;
 import db.UserDatabaseUtil;
 
@@ -56,8 +53,8 @@ public class LoginServlet extends HttpServlet {
 			if (cookie != null) {
 				System.out.println("session cookie found");
 				sessionCookieValue = cookie.getValue();
-				try  {
-					int userId = CookieUtil.getUserIdFromSessionCookie( sessionCookieValue);
+				try {
+					int userId = CookieUtil.getUserIdFromSessionCookie(sessionCookieValue);
 					if (userId != -1) {
 						User user = UserDatabaseUtil.getUserById(userId);
 						if (user != null) {
@@ -112,7 +109,7 @@ public class LoginServlet extends HttpServlet {
 
 		if (username != null && password != null) {
 			int userID = 0; // to use in sessionCookie
-			
+
 //			PreparedStatement psFind = null;
 //			ResultSet cookieRs = null;
 //			PreparedStatement ps1 = null;

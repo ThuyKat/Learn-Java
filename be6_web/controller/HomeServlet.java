@@ -113,6 +113,7 @@ public class HomeServlet extends HttpServlet {
 		System.out.println(action + "action captured at HomeServlet");
 		
 		if(action =="viewCart") {
+			System.out.println("action == view cart, I am going to cart");
 			response.sendRedirect("/be6-web/Cart");
 		}else {
 		response.sendRedirect("/be6-web/Product");

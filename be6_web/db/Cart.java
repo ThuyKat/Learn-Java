@@ -1,5 +1,6 @@
 package db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Cart {
@@ -19,6 +20,7 @@ public class Cart {
 	
 	public Cart() {
 		super();
+		this.items = new ArrayList<>(); // this to avoid item list be null
 		// TODO Auto-generated constructor stub
 	}
 

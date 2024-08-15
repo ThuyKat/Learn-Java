@@ -33,24 +33,23 @@ public class CartServlet extends HttpServlet {
 		System.out.println("viewCart ");
 		HttpSession session = request.getSession();
 		Cart cart = (Cart) session.getAttribute("cart");
-		if (cart != null) {
-			List<ItemInCart> items = cart.getItems();
-			if (items != null && !items.isEmpty()) { // in case of logging in from other page than going through Home,
-														// cart will not be loaded
+		String username = (String) session.getAttribute("username");
+		if (cart != null) { //this already ensure items !=null because we initialize new item list with every new cart
+				if(username !=null) { //when user login , session is changed so total price needs recalculation
+				List<ItemInCart> items = cart.getItems(); 
+			
 				double totalPrice = items.stream().mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice())
 						.sum();
 				float roundedTotal = Math.round(totalPrice * 100) / 100;
 				cart.setTotalPrice(roundedTotal);
 				session.setAttribute("cart", cart);
+				}
 				response.sendRedirect("viewCart.jsp");
-			} else {
+			} else { // in case of logging in from other page than going through Home,
+				// cart will not be loaded
 				response.sendRedirect("/be6-web/Home?action=viewCart");
 
 			}
-		} else {
-			response.sendRedirect("/be6-web/Home?action=viewCart");
-		}
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -60,21 +59,26 @@ public class CartServlet extends HttpServlet {
 		ItemInCartDatabaseUtil itemInCartRepo = new ItemInCartDatabaseUtil();
 		HttpSession session = request.getSession();
 		String username = (String) session.getAttribute("username");
-		Cart cart = (Cart) session.getAttribute("cart");
+		Cart cart = new Cart();
+		if(session.getAttribute("cart")!= null) {
+		cart = (Cart) session.getAttribute("cart");
+		}
 		List<ItemInCart> items = new ArrayList<>();
 
 		int cartId = 0;
-		if (cart.getItems() != null) {
+		
+//		if (cart.getItems() != null) { // if condition can be obmit because we initiate new item list with new cart in entity Cart
 			items = cart.getItems();
 			cartId = cart.getId();
-		}
+//		}
 
 		ProductDatabaseUtil ProductRepo = new ProductDatabaseUtil();
 		// find product by productId
 		String productId = (String) request.getParameter("productId");
-
-		int quantity = Integer.parseInt(request.getParameter("quantity"));
-
+		int quantity = 0;
+		if(request.getParameter("quantity") != "") {
+		quantity = Integer.parseInt(request.getParameter("quantity"));
+		}
 		try {
 
 			if (quantity > 0) {
@@ -84,7 +88,6 @@ public class CartServlet extends HttpServlet {
 					// check if product exists in cart
 					boolean isProductExistInCart = false;
 					if (items.size() != 0) {
-						System.out.println("item.size(): " + items.size());
 						for (ItemInCart item : items) {
 							if (item.getProduct().getId() == product.getId()) {
 								int updatedQuantity = item.getQuantity() + quantity;
@@ -103,11 +106,15 @@ public class CartServlet extends HttpServlet {
 						newItem.setProduct(product);
 						newItem.setQuantity(quantity);
 						items.add(newItem);
+						int countItem = items.size();
+						session.setAttribute("countItem", countItem);
 					}
-					// reset the itemCount in session:
-					int countItem = (int) session.getAttribute("countItem");
-					countItem++;
-					session.setAttribute("countItem", countItem);
+
+					// update total price attribute
+					double totalPrice = items.stream()
+							.mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice()).sum();
+					float roundedTotal = Math.round(totalPrice * 100) / 100;
+					cart.setTotalPrice(roundedTotal);
 
 					if (username == null) {
 						// guest user: convert the list of items to string and add it to cart cookie
@@ -125,47 +132,47 @@ public class CartServlet extends HttpServlet {
 						Cookie cookieCart = new Cookie(cookieCartName, cookieCartValue);
 						cookieCart.setMaxAge(60 * 60 * 24 * 7); // cookie will last for 7 days
 						response.addCookie(cookieCart);
-
-						// update cart attribute in session
-						cart.setItems(items);
-						session.setAttribute("cart", cart);
+						
+						
+						
 					} else {
 						// logged in user
 						// if cart not exist, save new cart to the db
-						if (cartId == 0) {
-							System.out.println("cart not exist");
-							// save cart to DB
+						if (cartId == 0) { // cart id is 0 after checkout, old cart is still in database, only item_in_cart is updated
+							
 							User user = UserDatabaseUtil.getUserByUsername(username);
-							cart.setUserId(user.getUserId());
-
-							if (cart.getItems().size() != 0) {
-								cartRepo.saveCart(cart);
+							//find cart by userId in database
+							Cart cartDB = cartRepo.getCartByUserId(user.getUserId());
+							if(cartDB == null) {
+								// if no cart is found in database,save cart to DB
+								System.out.println("cart not exist");
+								cart.setUserId(user.getUserId());
+	
+								if (cart.getItems().size() != 0) {
+									
+									cartRepo.saveCart(cart);
+								}
 							}
 							// retrieve cartId
 							cart = cartRepo.getCartByUserId(user.getUserId());
 							cartId = cart.getId();
 
 							itemInCartRepo.saveItemInCart(items, cartId);
-							// update total price attribute
-							double totalPrice = items.stream()
-									.mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice()).sum();
-							float roundedTotal = Math.round(totalPrice * 100) / 100;
-							cart.setTotalPrice(roundedTotal);
-
-							cartRepo.updateCart(cart);
+							
 						} else {
 							// if cart exist, update cart and itemInCart
 							System.out.println("cart is in db");
 							itemInCartRepo.updateItemInCart(items, cartId);
-							// update total price attribute
-							double totalPrice = items.stream()
-									.mapToDouble(od -> od.getQuantity() * od.getProduct().getPrice()).sum();
-							float roundedTotal = Math.round(totalPrice * 100) / 100;
-							cart.setTotalPrice(roundedTotal);
 
-							cartRepo.updateCart(cart);
 						}
+
+
+						cartRepo.updateCart(cart);
 					}
+					
+					// update cart attribute in session
+					cart.setItems(items);
+					session.setAttribute("cart", cart);
 
 				} else {
 					response.sendRedirect("error.jsp");
