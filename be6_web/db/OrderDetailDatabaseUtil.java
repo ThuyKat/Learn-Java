@@ -7,12 +7,12 @@ import java.util.List;
 
 public class OrderDetailDatabaseUtil {
 	
-public void saveOrderDetail(List<OrderDetail> orderDetails) throws SQLException {
+public void saveOrderDetail(List<OrderDetail> orderDetails, Connection connection) throws SQLException {
 		
 		PreparedStatement ps= null;
 		
 		for(OrderDetail item : orderDetails) {
-		try(Connection connection = DatabaseConnectionUtil.getDatabaseConnection()){
+		try{
 			String query = "INSERT INTO order_details (quantity, order_id,product_id,product_price) VALUES (?, ?, ?,?)";
 
 			ps = connection.prepareStatement(query);

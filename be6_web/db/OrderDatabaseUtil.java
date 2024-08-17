@@ -7,11 +7,11 @@ import java.sql.SQLException;
 
 public class OrderDatabaseUtil {
 	
-public int saveOrder(Order order) throws SQLException {
+public int saveOrder(Order order, Connection connection) throws SQLException {
 		int orderId = -1;
 		PreparedStatement ps = null;
 		ResultSet generatedKeys = null;
-		try(Connection connection = DatabaseConnectionUtil.getDatabaseConnection()){
+		try{
 			//save new Cart to DB
 			String query =  "INSERT INTO orders (user_id,status) VALUES (?,?)";
 			ps = connection.prepareStatement(query,	PreparedStatement.RETURN_GENERATED_KEYS);
