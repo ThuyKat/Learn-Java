@@ -18,11 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UserApi extends HttpServlet {
 
-	public UserApi() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
+	
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
