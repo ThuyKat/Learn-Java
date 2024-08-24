@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+    const xhttp = new XMLHttpRequest();
+       function submitForm(event){
+        event.preventDefault(); // Prevent the default form submission
+            //get the form
+            const form = document.getElementById('register-form');
+            // Create a FormData object from the form
+            const formData = new FormData(form);
+            // Convert FormData to a plain object
+            const formObject = {};
+            formData.forEach((value, key) => {
+                if (formObject.hasOwnProperty(key)) {
+                    formObject[key] += ',' + value}
+                 else {
+                    formObject[key] = value;
+                 }
+            });   
+            // Convert the object to a JSON string
+            const jsonData = JSON.stringify(formObject);
+        
+        xhttp.open("POST","http://localhost:8081/be6-be/UserApi");
+        xhttp.setRequestHeader('Content-Type','application/json');
+
+        xhttp.send(JSON.stringify(jsonData));
+        }
+
+
+    </script>
+</head>
+<body>
+    <h1>Register form</h1>
+    <form id="register-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"autocomplete="username"><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" autocomplete="current-password"><br><br>
+
+        <p>Gender:</p><br>
+        <label for="male">Male</label>
+        <input type="radio" id="male" name="gender" value="male">
+
+        <label for="female">Female</label>
+        <input type="radio" id="female" name="gender" value="female">
+        
+
+        <p>Hobbies:</p><br>
+        
+       
+        <input type="checkbox" id="music" name="hobbies" value="music" checked>
+        <label for="music">Music</label>
+
+        
+        <input type="checkbox" id="sport" name="hobbies" value="sport" checked>
+        <label for="sport">Sport</label>
+
+        <input type="checkbox" id="reading" name="hobbies" value="reading" checked>
+        <label for="reading">Reading</label>
+        <br><br>
+        <label for="city">City:</label>
+        <select id="city" name="city">
+            <option value="tphcm">TPHCM</option>
+            <option value="hn">HN</option>
+            <option value="others">Others</option>
+        </select><br><br>
+        <button type="submit" onclick="submitForm(event)">Register</button> 
+    </form>
+</body>
+</html>

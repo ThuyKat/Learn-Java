@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        // CORS error - cross origin resource sharing: 2 moi truong khac nhau, khi gui request tu FE vao BE
+        // by default: not allowing sharing resources by BE -> change setting
+        const xhttp = new XMLHttpRequest();
+        function showProduct(){
+           
+            xhttp.onload = function(){
+                console.log(this.responseText);
+                // listContainer.innerHTML = ''; // Clear previous content
+
+                
+                // divProductList.innerHTML = this.responseText;
+                // Parse the JSON response
+                const products = JSON.parse(this.responseText);
+                //list container
+                // const listContainer = document.getElementById('list-container');
+                // Create a new unordered list element
+                // const ul = document.createElement('ul');
+                let htmlElement = '<h2> Product List </h2> <ul>'
+
+                // Iterate over the JSON data
+            //     products.forEach(product => {
+            // // Create a list item for each element in the JSON array
+            //     const li = document.createElement('li');
+            //     li.textContent = `Name: ${product.name}, Price: ${product.price}`;
+            // ul.appendChild(li);
+            //     // Append the list to the container
+            //     listContainer.appendChild(ul);
+            //     });
+            for (let i = 0; i < products.length; i++) {
+    htmlElement += "<li>" + products[i].name + " -- " + products[i].price + "</li>";
+}
+            htmlElement+='</ul>';
+            let divProductList = document.getElementById("product-list");
+            divProductList.innerHTML = htmlElement;
+            //     // Open a GET request to the specified URL
+            // xhttp.open("GET", "http://localhost:8081/be6_be/ProductApi", true);
+            // xhttp.send();
+            }
+            xhttp.open("GET","http://localhost:8081/be6-be/ProductApi");
+            xhttp.send();
+        }
+    </script>
+</head>
+<body>
+    <input type="button" onclick="showProduct()" value="Click this button to view product">
+    <div id="product-list">
+        <!-- Product List will be generated here -->
+        <!-- create a list of product -->
+        <!-- <h2>Product List</h2>
+        <div id ="list-container">
+        
+        </div> -->
+    </div>
+</body>
+</html>
