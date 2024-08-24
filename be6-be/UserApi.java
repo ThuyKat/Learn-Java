@@ -53,12 +53,14 @@ public class UserApi extends HttpServlet {
 			}
 		}
 
-		// Remove the extra quotes at the beginning and end of the string
 		String jsonString = jsonBuffer.toString();
-		// Unescape the JSON string if it's enclosed in quotes and contains escaped
-		// quotes
+		// Unescape the JSON string if it's enclosed in quotes and contains escaped quotes
 		if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
 			jsonString = jsonString.substring(1, jsonString.length() - 1).replace("\\\"", "\"");
+			/*
+			 * "\\\"" represents the sequence \" which is
+			 * formed by \\ represents a single backslash (\) in the string and \" represents a double quote(") character
+			 */
 		}
 		try {
 		// Convert JSON string to a Map
